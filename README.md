@@ -347,6 +347,16 @@ Below is a list of tools provided by this MCP server. Each tool can be called vi
 
 ---
 
+## Prerequisites
+
+To use the language-specific tools (such as `python-script`, `php-script`, `java-script`), you must have the corresponding interpreters installed on your server:
+
+- **Node.js**: Required for `java-script` tool
+- **Python**: Required for `python-script` tool
+- **PHP**: Required for `php-script` tool
+
+Make sure these interpreters are available in your system's PATH. If you do not have them installed, the related tools will not function.
+
 ## Usage
 
 1. **Install dependencies:**
