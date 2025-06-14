@@ -2,7 +2,7 @@
     "name": "@purinton/developer",
     "type": "module",
     "version": "1.0.0",
-    "description": "A Model Context Protocol (MCP) server template for building AI and automation tool APIs.",
+    "description": "A customizable Model Context Protocol (MCP) server for AI, automation, and developer tool APIs. Includes dynamic tool loading, multi-language script execution, and remote system integration.",
     "main": "project.mjs",
     "scripts": {
         "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent"
@@ -13,7 +13,18 @@
     },
     "keywords": [
         "developer",
-        "nodejs"
+        "nodejs",
+        "MCP",
+        "automation",
+        "AI tools",
+        "tool server",
+        "remote scripting",
+        "multi-language",
+        "python",
+        "php",
+        "javascript",
+        "ssh",
+        "sql"
     ],
     "author": "Russell Purinton <russell@purinton.us>",
     "license": "MIT",
