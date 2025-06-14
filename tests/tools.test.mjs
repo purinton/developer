@@ -13,13 +13,15 @@ describe('All custom tool handler files', () => {
             expect(typeof mod.default).toBe('function');
         });
 
-        test(`${file} registers a tool with the server`, async () => {
-            const onMock = jest.fn();
+        test(`${file} registers a tool with the server (new pattern)`, async () => {
             const toolMock = jest.fn();
-            const mockServer = { on: onMock, tool: toolMock };
+            const onMock = jest.fn();
+            const logMock = { debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn() };
+            const mockServer = { tool: toolMock, on: onMock };
             const mod = await import(filePathUrl);
-            await mod.default(mockServer, 'test-tool');
+            await mod.default({ mcpServer: mockServer, toolName: 'test-tool', log: logMock });
             expect(toolMock).toHaveBeenCalled();
         });
     }
 });
+
