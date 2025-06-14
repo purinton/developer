@@ -451,17 +451,19 @@ docker build -t developer .
 
 ### 2. Run the container
 
-Set your environment variables (such as `MCP_TOKEN`) and map the port as needed:
+Set your environment variables (such as `MCP_TOKEN`) and map the port as needed. The app will run as the `developer` user, and the `/home/developer/app` directory will be used for persistent storage:
 
 ```bash
 docker run -d \
   -e MCP_TOKEN=your_secret_token \
   -e MCP_PORT=1234 \
+  -v /your/local/appdir:/home/developer/app \
   -p 1234:1234 \
   --name developer \
   developer
 ```
 
+- Replace `/your/local/appdir` with a directory on your host to persist app data and configuration.
 - Replace `your_secret_token` with your desired token.
 - You can override the port by changing `-e MCP_PORT` and `-p` values.
 
