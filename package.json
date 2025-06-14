@@ -1,5 +1,5 @@
 {
-    "name": "@purinton/mcp-server-template",
+    "name": "@purinton/developer",
     "type": "module",
     "version": "1.0.0",
     "description": "A Model Context Protocol (MCP) server template for building AI and automation tool APIs.",
@@ -9,22 +9,18 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/purinton/mcp-server-template.git"
+        "url": "git+https://github.com/purinton/developer.git"
     },
     "keywords": [
-        "mcp-server",
-        "mcp-server-template",
-        "ai-tools",
-        "automation",
-        "nodejs",
-        "template"
+        "developer",
+        "nodejs"
     ],
     "author": "Russell Purinton <russell@purinton.us>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/purinton/mcp-server-template/issues"
+        "url": "https://github.com/purinton/developer/issues"
     },
-    "homepage": "https://github.com/purinton/mcp-server-template#readme",
+    "homepage": "https://github.com/purinton/developer#readme",
     "devDependencies": {
         "jest": "^30.0.0"
     },
