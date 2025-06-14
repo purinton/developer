@@ -1,7 +1,7 @@
 {
     "name": "@purinton/developer",
     "type": "module",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A Model Context Protocol (MCP) server template for building AI and automation tool APIs.",
     "main": "project.mjs",
     "scripts": {
