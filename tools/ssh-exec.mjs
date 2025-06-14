@@ -1,7 +1,5 @@
-import { z } from 'zod';
+import { z, buildResponse } from '@purinton/mcp-server';
 import { Client } from 'ssh2';
-import log from '../log.mjs';
-import { buildResponse } from '../toolHelpers.mjs';
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
@@ -19,8 +17,8 @@ async function getDefaultPrivateKey() {
     return undefined;
 }
 
-export default async function (server, toolName = 'ssh-exec') {
-    server.tool(
+export default async function ({ mcpServer, toolName, log }) {
+    mcpServer.tool(
         toolName,
         'Execute multiple commands on multiple remote servers via SSH',
         {
@@ -50,19 +48,23 @@ export default async function (server, toolName = 'ssh-exec') {
                     conn.on('ready', async () => {
                         for (const cmd of commands) {
                             await new Promise((res) => {
+                                let stdout = '';
+                                let stderr = '';
+                                let timedOut = false;
+                                let timeout = setTimeout(() => {
+                                    timedOut = true;
+                                    try { conn.end(); } catch (e) {}
+                                    res();
+                                }, 50000);
                                 conn.exec(cmd, (err, stream) => {
                                     if (err) {
-                                        results.push({ command: cmd, success: false, error: err.message });
+                                        clearTimeout(timeout);
+                                        results.push({ stdout, stderr, exitCode: 1, timedOut, error: err.message });
                                         return res();
                                     }
-                                    let stdout = '';
-                                    let stderr = '';
                                     stream.on('close', (code, signal) => {
-                                        let result = { command: cmd, stdout, stderr, exitCode: code, signal };
-                                        if (code === 0 && !stdout && !stderr) {
-                                            result.success = true;
-                                        }
-                                        results.push(result);
+                                        clearTimeout(timeout);
+                                        results.push({ stdout, stderr, exitCode: code, timedOut });
                                         res();
                                     }).on('data', (data) => {
                                         stdout += data;
@@ -83,7 +85,6 @@ export default async function (server, toolName = 'ssh-exec') {
                         host,
                         username,
                         privateKey,
-                        // No password, no port (default 22)
                     });
                 });
             }

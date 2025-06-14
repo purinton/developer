@@ -1,10 +1,9 @@
-import { z } from 'zod';
-import db from '../db.mjs';
-import log from '../log.mjs';
-import { buildResponse } from '../toolHelpers.mjs';
+import { z, buildResponse } from '@purinton/mcp-server';
+import { createDb } from '@purinton/mysql';
 
-export default async function (server, toolName = 'sql-query') {
-  server.tool(
+export default async function ({ mcpServer, toolName, log }) {
+  const db = createDb({ log });
+  mcpServer.tool(
     toolName,
     'Run SQL queries on the remote Linux server (multiple databases and queries supported)',
     {

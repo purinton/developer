@@ -1,14 +1,12 @@
-import { z } from 'zod';
+import { z, buildResponse } from '@purinton/mcp-server';
 import fs from 'fs/promises';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import log from '../log.mjs';
-import { buildResponse } from '../toolHelpers.mjs';
 
 const execAsync = promisify(exec);
 
-export default async function (server, toolName = 'write-file') {
-  server.tool(
+export default async function ({ mcpServer, toolName, log }) {
+  mcpServer.tool(
     toolName,
     'Write file on the remote Linux server',
     { path: z.string(), content: z.string(), owner: z.string().optional(), group: z.string().optional(), chmod: z.string().optional() },

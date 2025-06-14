@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import fs from 'fs';
 import { path, pathUrl } from '@purinton/path';
 import { jest } from '@jest/globals';

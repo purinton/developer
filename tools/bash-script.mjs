@@ -1,11 +1,9 @@
-import { z } from 'zod';
+import { z, buildResponse } from '@purinton/mcp-server';
 import { spawn } from 'child_process';
-import log from '../log.mjs';
-import { buildResponse } from '../toolHelpers.mjs';
 import fs from 'fs/promises';
 
-export default async function (server, toolName = 'bash-script') {
-  server.tool(
+export default async function ({ mcpServer, toolName, log }) {
+  mcpServer.tool(
     toolName,
     'Run bash script on the remote Linux server',
     { script: z.string(), cwd: z.string().optional() },
@@ -13,7 +11,6 @@ export default async function (server, toolName = 'bash-script') {
       try {
         let execOptions = {};
         let cwd = _args.cwd || '/tmp';
-        // Validate cwd is a directory
         try {
           const stat = await fs.stat(cwd);
           if (!stat.isDirectory()) {

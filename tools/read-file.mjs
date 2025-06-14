@@ -1,10 +1,8 @@
-import { z } from 'zod';
+import { z, buildResponse } from '@purinton/mcp-server';
 import fs from 'fs/promises';
-import log from '../log.mjs';
-import { buildResponse } from '../toolHelpers.mjs';
 
-export default async function (server, toolName = 'read-file') {
-  server.tool(
+export default async function ({ mcpServer, toolName, log }) {
+  mcpServer.tool(
     toolName,
     'Read file content on the remote Linux server',
     { path: z.string() },

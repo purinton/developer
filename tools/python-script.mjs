@@ -1,11 +1,9 @@
-import { z } from 'zod';
+import { z, buildResponse } from '@purinton/mcp-server';
 import { spawn } from 'child_process';
-import log from '../log.mjs';
-import { buildResponse } from '../toolHelpers.mjs';
 import fs from 'fs/promises';
 
-export default async function (server, toolName = 'python-script') {
-  server.tool(
+export default async function ({ mcpServer, toolName, log }) {
+  mcpServer.tool(
     toolName,
     'Run Python script on the remote Linux server',
     { script: z.string(), cwd: z.string().optional() },
@@ -43,6 +41,10 @@ export default async function (server, toolName = 'python-script') {
           child.on('close', (exitCode) => {
             clearTimeout(timeout);
             resolve(buildResponse({ stdout, stderr, exitCode, timedOut }));
+          });
+          child.on('error', (err) => {
+            clearTimeout(timeout);
+            resolve(buildResponse({ stdout, stderr, exitCode: 1, timedOut, error: err.message }));
           });
           child.stdin.write(_args.script);
           child.stdin.end();

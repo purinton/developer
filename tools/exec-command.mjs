@@ -1,14 +1,9 @@
-import { z } from 'zod';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import log from '../log.mjs';
-import { buildResponse } from '../toolHelpers.mjs';
+import { z, buildResponse } from '@purinton/mcp-server';
+import { spawn } from 'child_process';
 import fs from 'fs/promises';
 
-const execAsync = promisify(exec);
-
-export default async function (server, toolName = 'exec-command') {
-  server.tool(
+export default async function ({ mcpServer, toolName, log }) {
+  mcpServer.tool(
     toolName,
     'Execute a command or array of commands on the remote Linux server',
     {
@@ -33,34 +28,38 @@ export default async function (server, toolName = 'exec-command') {
               throw new Error('cwd is not a directory');
             }
           } catch (e) {
-            results.push({ command, cwd: execCwd, error: 'Invalid Linux path for cwd: ' + execCwd });
+            results.push({ stdout: '', stderr: '', exitCode: 1, timedOut: false, error: 'Invalid Linux path for cwd: ' + execCwd });
             continue;
           }
           execOptions.cwd = execCwd;
           execOptions.timeout = 50000; // 50 seconds
           execOptions.env = { ...process.env, ...(env || {}) };
-          let stdout, stderr, exitCode, timedOut = false;
-          try {
-            const result = await execAsync(command, { ...execOptions, input: '' });
-            stdout = result.stdout;
-            stderr = result.stderr;
-            exitCode = 0;
-            let resObj = { command, cwd: execCwd, env, stdout, stderr, exitCode, timedOut };
-            if (exitCode === 0 && !stdout && !stderr) {
-              resObj.success = true;
-            }
-            results.push(resObj);
-          } catch (err) {
-            stdout = err.stdout;
-            stderr = err.stderr;
-            exitCode = typeof err.code === 'number' ? err.code : 1;
-            if (err.killed && err.signal === 'SIGTERM' && err.killedByTimeout) {
+          await new Promise((resolve) => {
+            let stdout = '';
+            let stderr = '';
+            let timedOut = false;
+            const child = spawn('bash', ['-c', command], execOptions);
+            const timeout = setTimeout(() => {
               timedOut = true;
-            } else if (err.signal === 'SIGTERM' && err.message && err.message.includes('timed out')) {
-              timedOut = true;
-            }
-            results.push({ command, cwd: execCwd, env, stdout, stderr, exitCode, timedOut, error: err.message });
-          }
+              child.kill('SIGTERM');
+            }, 50000);
+            child.stdout.on('data', (data) => {
+              stdout += data;
+            });
+            child.stderr.on('data', (data) => {
+              stderr += data;
+            });
+            child.on('close', (exitCode) => {
+              clearTimeout(timeout);
+              results.push({ stdout, stderr, exitCode, timedOut });
+              resolve();
+            });
+            child.on('error', (err) => {
+              clearTimeout(timeout);
+              results.push({ stdout, stderr, exitCode: 1, timedOut, error: err.message });
+              resolve();
+            });
+          });
         }
         return buildResponse({ results });
       } catch (err) {
