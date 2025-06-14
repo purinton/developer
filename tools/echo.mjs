@@ -1,20 +1,20 @@
-import logger from '@purinton/log';
 import { z, buildResponse } from '@purinton/mcp-server';
 
-export default async function (server, toolName = 'echo', log = logger) {
-  server.tool(
+export default async function ({ mcpServer, toolName, log }) {
+  mcpServer.tool(
     toolName,
     "Echo Tool",
     { echoText: z.string() },
     async (_args, _extra) => {
-      log.debug(toolName, { _args, _extra });
-      const pong = {
+      log.debug(`${toolName} Request`, { _args });
+      const response = {
         message: "echo-reply",
         data: {
           text: _args.echoText
         }
       };
-      return buildResponse(pong);
+      log.debug(`${toolName} Response`, { response });
+      return buildResponse(response);
     }
   );
 }

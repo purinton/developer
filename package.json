@@ -34,8 +34,8 @@
     },
     "dependencies": {
         "@purinton/common": "^1.0.10",
-        "@purinton/mcp-server": "^1.0.3",
         "@purinton/mysql": "^1.0.2",
+        "@purinton/mcp-server": "^1.0.4",
         "dotenv": "^16.5.0"
     }
 }
