@@ -19,4 +19,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: npm test
+      - name: Run tests
+        run: npm test
+        env:
+          MYSQL_HOST: dummy
+          MYSQL_USER: dummy
+          MYSQL_PASSWORD: dummy
+          MYSQL_DATABASE: dummy
