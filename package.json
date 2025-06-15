@@ -1,9 +1,9 @@
 {
     "name": "@purinton/developer",
     "type": "module",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "A customizable Model Context Protocol (MCP) server for AI, automation, and developer tool APIs. Includes dynamic tool loading, multi-language script execution, and remote system integration.",
-    "main": "project.mjs",
+    "main": "developer.mjs",
     "scripts": {
         "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent"
     },
