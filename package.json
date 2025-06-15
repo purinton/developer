@@ -5,6 +5,7 @@
     "description": "A customizable Model Context Protocol (MCP) server for AI, automation, and developer tool APIs. Includes dynamic tool loading, multi-language script execution, and remote system integration.",
     "main": "developer.mjs",
     "scripts": {
+        "start": "node mcp-server-template.mjs",
         "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent"
     },
     "repository": {
