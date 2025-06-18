@@ -9,7 +9,7 @@ registerSignals({ log });
 
 const packagePath = path(import.meta, 'package.json');
 const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-const name = packageJson.name || 'mcp-server-template';
+const name = packageJson.name || 'developer';
 const version = packageJson.version || '1.0.0';
 
 const port = parseInt(process.env.MCP_PORT || '1234', 10);
