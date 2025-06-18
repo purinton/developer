@@ -1,10 +1,7 @@
-import { createDb } from '@purinton/mysql';
-import { registerSignals } from '@purinton/common';
 import { z, buildResponse } from '@purinton/mcp-server';
 
 export default async function ({ mcpServer, toolName, log }) {
-  const db = await createDb({ log });
-  registerSignals({ log, shutdownHook: () => db.end() });
+  const db = mcpServer.context.db;
   mcpServer.tool(
     toolName,
     'Run SQL queries on the remote Linux server (multiple databases and queries supported)',

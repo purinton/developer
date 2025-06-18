@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import 'dotenv/config';
+import { createDb } from '@purinton/mysql';
 import { mcpServer } from '@purinton/mcp-server';
 import { fs, log, path, registerHandlers, registerSignals } from '@purinton/common';
 
@@ -10,7 +11,6 @@ const packagePath = path(import.meta, 'package.json');
 const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 const name = packageJson.name || 'developer';
 const version = packageJson.version || '1.0.0';
-
 const port = parseInt(process.env.MCP_PORT || '1234', 10);
 const token = process.env.MCP_TOKEN;
 if (!token) {
@@ -29,8 +29,11 @@ const authCallback = (bearerToken) => {
 };
 
 try {
+    const db = await createDb({ log });
+    registerSignals({ log, shutdownHook: () => db.end() });
+
     const { httpInstance, transport } = await mcpServer({
-        name, version, port, token, toolsDir, log, authCallback
+        name, version, port, token, toolsDir, log, authCallback, context: { db }
     });
     registerSignals({ log, shutdownHook: () => httpInstance.close() });
     registerSignals({ log, shutdownHook: () => transport.close() });
