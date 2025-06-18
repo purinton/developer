@@ -1,6 +1,12 @@
+import 'dotenv/config';
 import fs from 'fs';
 import { path, pathUrl } from '@purinton/path';
 import { jest } from '@jest/globals';
+
+process.env.MYSQL_HOST = 'test';
+process.env.MYSQL_USER = 'test';
+process.env.MYSQL_PASSWORD = 'test';
+process.env.MYSQL_DATABASE = 'test';
 
 describe('All custom tool handler files', () => {
     const toolsDir = path(import.meta, '..', 'tools');

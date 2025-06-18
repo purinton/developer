@@ -31,23 +31,24 @@ This project is an MCP server built on [`@purinton/mcp-server`](https://www.npmj
 
 Below is a list of tools provided by this MCP server. Each tool can be called via the MCP protocol or HTTP API.
 
-### Example: Echo Tool
+---
 
-**Name:** `echo`  
-**Description:** Returns the text you send it.
+### bash-script
+
+**Description:** Run bash script on the remote Linux server.
 
 **Input Schema:**
 
 ```json
-{ "echoText": "string" }
+{ "script": "string", "cwd": "string (optional)" }
 ```
 
 **Example Request:**
 
 ```json
 {
-  "tool": "echo",
-  "args": { "echoText": "Hello, world!" }
+  "tool": "bash-script",
+  "args": { "script": "echo Hello", "cwd": "/tmp" }
 }
 ```
 
@@ -55,15 +56,306 @@ Below is a list of tools provided by this MCP server. Each tool can be called vi
 
 ```json
 {
-  "message": "echo-reply",
-  "data": { "text": "Hello, world!" }
+  "stdout": "Hello\n",
+  "stderr": "",
+  "exitCode": 0,
+  "timedOut": false
 }
 ```
 
-<!--
-Repeat the above block for each tool you add.
-Document: tool name, description, input schema, example request/response.
--->
+---
+
+### exec-command
+
+**Description:** Execute a command or array of commands on the remote Linux server.
+
+**Input Schema:**
+
+```json
+{
+  "commands": [
+    { "command": "string", "cwd": "string (optional)", "env": { "VAR": "value" } }
+  ]
+}
+```
+
+**Example Request:**
+
+```json
+{
+  "tool": "exec-command",
+  "args": {
+    "commands": [
+      { "command": "ls -l", "cwd": "/tmp" }
+    ]
+  }
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "results": [
+    { "stdout": "...", "stderr": "", "exitCode": 0, "timedOut": false }
+  ]
+}
+```
+
+---
+
+### java-script
+
+**Description:** Run a JavaScript script with Node.js on the remote Linux server.
+
+**Input Schema:**
+
+```json
+{ "script": "string", "cwd": "string (optional)" }
+```
+
+**Example Request:**
+
+```json
+{
+  "tool": "java-script",
+  "args": { "script": "console.log('hi')", "cwd": "/tmp" }
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "stdout": "hi\n",
+  "stderr": "",
+  "exitCode": 0,
+  "timedOut": false
+}
+```
+
+---
+
+### php-script
+
+**Description:** Run PHP script on the remote Linux server.
+
+**Input Schema:**
+
+```json
+{ "script": "string", "cwd": "string (optional)" }
+```
+
+**Example Request:**
+
+```json
+{
+  "tool": "php-script",
+  "args": { "script": "<?php echo 'hi'; ?>", "cwd": "/tmp" }
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "stdout": "hi",
+  "stderr": "",
+  "exitCode": 0,
+  "timedOut": false
+}
+```
+
+---
+
+### python-script
+
+**Description:** Run Python script on the remote Linux server.
+
+**Input Schema:**
+
+```json
+{ "script": "string", "cwd": "string (optional)" }
+```
+
+**Example Request:**
+
+```json
+{
+  "tool": "python-script",
+  "args": { "script": "print('hi')", "cwd": "/tmp" }
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "stdout": "hi\n",
+  "stderr": "",
+  "exitCode": 0,
+  "timedOut": false
+}
+```
+
+---
+
+### read-file
+
+**Description:** Read file content on the remote Linux server.
+
+**Input Schema:**
+
+```json
+{ "path": "string" }
+```
+
+**Example Request:**
+
+```json
+{
+  "tool": "read-file",
+  "args": { "path": "/etc/hostname" }
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "content": "myhostname\n"
+}
+```
+
+---
+
+### sql-query
+
+**Description:** Run SQL queries on the remote Linux server (multiple databases and queries supported).
+
+**Input Schema:**
+
+```json
+{
+  "batches": [
+    { "database": "string (optional)", "queries": ["string"] }
+  ]
+}
+```
+
+**Example Request:**
+
+```json
+{
+  "tool": "sql-query",
+  "args": {
+    "batches": [
+      { "database": "testdb", "queries": ["SELECT 1"] }
+    ]
+  }
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "results": [
+    {
+      "database": "testdb",
+      "results": [
+        { "query": "SELECT 1", "success": true, "rows": [{"1":1}], "rowCount": 1 }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+### ssh-exec
+
+**Description:** Execute multiple commands on multiple remote servers via SSH.
+
+**Input Schema:**
+
+```json
+{
+  "connections": [
+    { "host": "string", "username": "string (optional)", "commands": ["string"] }
+  ]
+}
+```
+
+**Example Request:**
+
+```json
+{
+  "tool": "ssh-exec",
+  "args": {
+    "connections": [
+      { "host": "1.2.3.4", "username": "root", "commands": ["uptime"] }
+    ]
+  }
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "results": [
+    {
+      "host": "1.2.3.4",
+      "username": "root",
+      "results": [
+        { "stdout": " 10:00:00 up 1 day, ...\n", "stderr": "", "exitCode": 0, "timedOut": false }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+### write-file
+
+**Description:** Write file on the remote Linux server.
+
+**Input Schema:**
+
+```json
+{ "path": "string", "content": "string", "owner": "string (optional)", "group": "string (optional)", "chmod": "string (optional)" }
+```
+
+**Example Request:**
+
+```json
+{
+  "tool": "write-file",
+  "args": { "path": "/tmp/test.txt", "content": "hello", "chmod": "644" }
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "bytesWritten": 5
+}
+```
+
+---
+
+## Prerequisites
+
+To use the language-specific tools (such as `python-script`, `php-script`, `java-script`), you must have the corresponding interpreters installed on your server:
+
+- **Node.js**: Required for `java-script` tool
+- **Python**: Required for `python-script` tool
+- **PHP**: Required for `php-script` tool
+
+Make sure these interpreters are available in your system's PATH. If you do not have them installed, the related tools will not function.
 
 ## Usage
 
@@ -159,17 +451,19 @@ docker build -t developer .
 
 ### 2. Run the container
 
-Set your environment variables (such as `MCP_TOKEN`) and map the port as needed:
+Set your environment variables (such as `MCP_TOKEN`) and map the port as needed. The app will run as the `developer` user, and the `/home/developer/app` directory will be used for persistent storage:
 
 ```bash
 docker run -d \
   -e MCP_TOKEN=your_secret_token \
   -e MCP_PORT=1234 \
+  -v /your/local/appdir:/home/developer/app \
   -p 1234:1234 \
   --name developer \
   developer
 ```
 
+- Replace `/your/local/appdir` with a directory on your host to persist app data and configuration.
 - Replace `your_secret_token` with your desired token.
 - You can override the port by changing `-e MCP_PORT` and `-p` values.
 

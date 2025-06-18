@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import 'dotenv/config';
 import { mcpServer } from '@purinton/mcp-server';
 import { fs, log, path, registerHandlers, registerSignals } from '@purinton/common';
@@ -33,8 +32,8 @@ try {
     const { httpInstance, transport } = await mcpServer({
         name, version, port, token, toolsDir, log, authCallback
     });
-    registerSignals({ shutdownHook: () => httpInstance.close() });
-    registerSignals({ shutdownHook: () => transport.close() });
+    registerSignals({ log, shutdownHook: () => httpInstance.close() });
+    registerSignals({ log, shutdownHook: () => transport.close() });
     log.info('Ready', { name, version, port });
 } catch (err) {
     log.error('Failed to start MCP server', { error: err });
