@@ -1,7 +1,7 @@
 {
     "name": "@purinton/developer",
     "type": "module",
-    "version": "1.0.20",
+    "version": "1.0.21",
     "description": "A customizable Model Context Protocol (MCP) server for AI, automation, and developer tool APIs. Includes dynamic tool loading, multi-language script execution, and remote system integration.",
     "main": "developer.mjs",
     "scripts": {
